@@ -10,9 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
- * @author shuang.kou
- * @createTime 2020年07月21日 14:25:00
- **/
+ * Utility methods for handling properties files.
+ */
 @Slf4j
 public final class PropertiesFileUtil {
     private PropertiesFileUtil() {

@@ -8,9 +8,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 线程池自定义配置类，可自行根据业务场景修改配置参数。
+ * Configuration for custom thread pools.
  *
- * @author shuang.kou
  * @createTime 2020年06月05日 17:03:00
  */
 @Setter

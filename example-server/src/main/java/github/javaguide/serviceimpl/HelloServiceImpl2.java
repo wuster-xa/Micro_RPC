@@ -7,10 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HelloServiceImpl2 implements HelloService {
 
-    static {
-        System.out.println("HelloServiceImpl2被创建");
-    }
-
     @Override
     public String hello(Hello hello) {
         log.info("HelloServiceImpl2收到: {}.", hello.getMessage());

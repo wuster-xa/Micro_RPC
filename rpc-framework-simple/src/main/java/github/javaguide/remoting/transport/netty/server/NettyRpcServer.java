@@ -15,7 +15,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
  * Server. Receive the client message, call the corresponding method according to the client message,
  * and then return the result to the client.
  *
- * @author shuang.kou
  * @createTime 2020年05月25日 16:42:00
  */
 @Slf4j

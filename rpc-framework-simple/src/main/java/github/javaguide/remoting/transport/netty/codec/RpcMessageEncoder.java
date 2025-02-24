@@ -1,6 +1,5 @@
 package github.javaguide.remoting.transport.netty.codec;
 
-
 import github.javaguide.compress.Compress;
 import github.javaguide.enums.CompressTypeEnum;
 import github.javaguide.enums.SerializationTypeEnum;
@@ -14,7 +13,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 /**
  * <p>
@@ -35,8 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * body（object类型数据）
  * </pre>
  *
- * @author WangTao
- * @createTime on 2020/10/2
  * @see <a href="https://zhuanlan.zhihu.com/p/95621344">LengthFieldBasedFrameDecoder解码器</a>
  */
 
@@ -91,4 +87,3 @@ public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
 
 
 }
-
