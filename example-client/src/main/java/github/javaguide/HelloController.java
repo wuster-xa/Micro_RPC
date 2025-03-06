@@ -3,6 +3,12 @@ package github.javaguide;
 import github.javaguide.annotation.RpcReference;
 import org.springframework.stereotype.Component;
 
+
+/*
+ * 
+ * what？？
+ * 
+ */
 @Component
 public class HelloController {
 
