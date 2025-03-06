@@ -14,9 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-/**
- * refer to dubbo spi: https://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html
- */
+
 @Slf4j
 public final class ExtensionLoader<T> {
     //use META-INF/extensions/ config
