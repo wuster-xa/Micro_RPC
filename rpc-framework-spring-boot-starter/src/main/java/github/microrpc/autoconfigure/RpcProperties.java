@@ -17,7 +17,7 @@ public class RpcProperties {
     private int servicePort = 9000;
 
     /**
-     * 序列化类�?
+     * 序列化类
      */
     private String serializationType = "kryo";
 
@@ -42,7 +42,7 @@ public class RpcProperties {
     private String group = "";
 
     /**
-     * 服务版本�?
+     * 服务版本�?
      */
     private String version = "";
 } 
