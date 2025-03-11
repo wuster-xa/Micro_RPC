@@ -1,0 +1,1 @@
+loadBalance=github.microrpc.loadbalance.loadbalancer.ConsistentHashLoadBalance

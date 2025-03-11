@@ -1,0 +1,3 @@
+kyro=github.microrpc.serialize.kyro.KryoSerializer
+protostuff=github.microrpc.serialize.protostuff.ProtostuffSerializer
+hessian=github.microrpc.serialize.hessian.HessianSerializer
