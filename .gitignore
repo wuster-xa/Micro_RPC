@@ -45,3 +45,6 @@ Thumbs.db
 # Spring Boot
 .springBeans
 spring-configuration-metadata.json
+
+# Project specific
+docs/optimization-plan.md
