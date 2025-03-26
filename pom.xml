@@ -39,10 +39,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Spring Boot -->
             <dependency>
-                <groupId>github.microrpc</groupId>
-                <artifactId>rpc-framework-dependencies</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.7.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -86,6 +87,17 @@
             <artifactId>junit-platform-runner</artifactId>
             <version>${junit.platform.version}</version>
             <scope>test</scope>
+        </dependency>
+        <!-- 添加注解支持 -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
         </dependency>
     </dependencies>
 
