@@ -47,4 +47,6 @@ Thumbs.db
 spring-configuration-metadata.json
 
 # Project specific
-docs/
+docs/optimization-plan.md
+docs/some_point.md
+docs/priority-optimization-plan.md
