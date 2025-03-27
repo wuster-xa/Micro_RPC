@@ -11,6 +11,7 @@
 
     <artifactId>rpc-framework-examples</artifactId>
     <packaging>pom</packaging>
+    <description>MicroRPC框架示例模块</description>
 
     <modules>
         <module>api</module>
@@ -19,14 +20,27 @@
     </modules>
 
     <dependencies>
+        <!-- 依赖starter模块 -->
         <dependency>
-            <groupId>github.microrpc</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>rpc-framework-spring-boot-starter</artifactId>
-            <version>${project.version}</version>
         </dependency>
+        
+        <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Spring Boot Maven插件 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+            </plugin>
+        </plugins>
+    </build>
 </project> 

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -14,19 +13,19 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 创建线程池的工具类
+ * 线程池工厂，创建线程池
  */
 @Slf4j
 public final class ThreadPoolFactoryUtil {
 
     /**
-     * 通过 threadNamePrefix 来区分不同线程池（我们可以把相同 threadNamePrefix 的线程池看作是为同一业务场景服务）�?     * key: threadNamePrefix
-     * value: threadPool
+     * 通过threadNamePrefix区分不同线程池（我们可以把相同threadNamePrefix的线程池看作是为同一业务场景服务）
+     * key: threadNamePrefix
+     * value: 线程池
      */
     private static final Map<String, ExecutorService> THREAD_POOLS = new ConcurrentHashMap<>();
 
     private ThreadPoolFactoryUtil() {
-
     }
 
     public static ExecutorService createCustomThreadPoolIfAbsent(String threadNamePrefix) {
@@ -34,13 +33,17 @@ public final class ThreadPoolFactoryUtil {
         return createCustomThreadPoolIfAbsent(customThreadPoolConfig, threadNamePrefix, false);
     }
 
-    public static ExecutorService createCustomThreadPoolIfAbsent(String threadNamePrefix, CustomThreadPoolConfig customThreadPoolConfig) {
+    public static ExecutorService createCustomThreadPoolIfAbsent(String threadNamePrefix,
+            CustomThreadPoolConfig customThreadPoolConfig) {
         return createCustomThreadPoolIfAbsent(customThreadPoolConfig, threadNamePrefix, false);
     }
 
-    public static ExecutorService createCustomThreadPoolIfAbsent(CustomThreadPoolConfig customThreadPoolConfig, String threadNamePrefix, Boolean daemon) {
-        ExecutorService threadPool = THREAD_POOLS.computeIfAbsent(threadNamePrefix, k -> createThreadPool(customThreadPoolConfig, threadNamePrefix, daemon));
-        // 如果 threadPool �?shutdown 的话就重新创建一�?        if (threadPool.isShutdown() || threadPool.isTerminated()) {
+    public static ExecutorService createCustomThreadPoolIfAbsent(CustomThreadPoolConfig customThreadPoolConfig,
+            String threadNamePrefix, Boolean daemon) {
+        ExecutorService threadPool = THREAD_POOLS.computeIfAbsent(threadNamePrefix,
+                k -> createThreadPool(customThreadPoolConfig, threadNamePrefix, daemon));
+        // 如果threadPool被shutdown了就重新创建一个
+        if (threadPool.isShutdown() || threadPool.isTerminated()) {
             THREAD_POOLS.remove(threadNamePrefix);
             threadPool = createThreadPool(customThreadPoolConfig, threadNamePrefix, daemon);
             THREAD_POOLS.put(threadNamePrefix, threadPool);
@@ -49,38 +52,14 @@ public final class ThreadPoolFactoryUtil {
     }
 
     /**
-     * shutDown 所有线程池
-     */
-    public static void shutDownAllThreadPool() {
-        log.info("call shutDownAllThreadPool method");
-        THREAD_POOLS.entrySet().parallelStream().forEach(entry -> {
-            ExecutorService executorService = entry.getValue();
-            executorService.shutdown();
-            log.info("shut down thread pool [{}] [{}]", entry.getKey(), executorService.isTerminated());
-            try {
-                executorService.awaitTermination(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                log.error("Thread pool never terminated");
-                executorService.shutdownNow();
-            }
-        });
-    }
-
-    private static ExecutorService createThreadPool(CustomThreadPoolConfig customThreadPoolConfig, String threadNamePrefix, Boolean daemon) {
-        ThreadFactory threadFactory = createThreadFactory(threadNamePrefix, daemon);
-        return new ThreadPoolExecutor(customThreadPoolConfig.getCorePoolSize(), customThreadPoolConfig.getMaximumPoolSize(),
-                customThreadPoolConfig.getKeepAliveTime(), customThreadPoolConfig.getUnit(), customThreadPoolConfig.getWorkQueue(),
-                threadFactory);
-    }
-
-    /**
-     * 创建 ThreadFactory 。如果threadNamePrefix不为空则使用自建ThreadFactory，否则使用defaultThreadFactory
+     * 创建 ThreadFactory
+     * 。如果threadNamePrefix不为空则使用自建ThreadFactory，否则使用defaultThreadFactory
      *
      * @param threadNamePrefix 作为创建的线程名字的前缀
-     * @param daemon           指定是否�?Daemon Thread(守护线程)
+     * @param daemon           指定是否为 Daemon Thread(守护线程)
      * @return ThreadFactory
      */
-    public static ThreadFactory createThreadFactory(String threadNamePrefix, Boolean daemon) {
+    private static ThreadFactory createThreadFactory(String threadNamePrefix, Boolean daemon) {
         if (threadNamePrefix != null) {
             if (daemon != null) {
                 return new ThreadFactoryBuilder()
@@ -90,21 +69,69 @@ public final class ThreadPoolFactoryUtil {
                 return new ThreadFactoryBuilder().setNameFormat(threadNamePrefix + "-%d").build();
             }
         }
-        return Executors.defaultThreadFactory();
+        return Thread::new;
     }
 
     /**
-     * 打印线程池的状�?     *
-     * @param threadPool 线程池对�?     */
-    public static void printThreadPoolStatus(ThreadPoolExecutor threadPool) {
-        ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1, createThreadFactory("print-thread-pool-status", false));
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            log.info("============ThreadPool Status=============");
-            log.info("ThreadPool Size: [{}]", threadPool.getPoolSize());
-            log.info("Active Threads: [{}]", threadPool.getActiveCount());
-            log.info("Number of Tasks : [{}]", threadPool.getCompletedTaskCount());
-            log.info("Number of Tasks in Queue: {}", threadPool.getQueue().size());
-            log.info("===========================================");
-        }, 0, 1, TimeUnit.SECONDS);
+     * 创建自定义配置的线程池
+     *
+     * @param customThreadPoolConfig 线程池自定义配置
+     * @param threadNamePrefix       线程名称前缀
+     * @param daemon                 是否守护线程
+     * @return ExecutorService
+     */
+    private static ExecutorService createThreadPool(CustomThreadPoolConfig customThreadPoolConfig,
+            String threadNamePrefix, Boolean daemon) {
+        ThreadFactory threadFactory = createThreadFactory(threadNamePrefix, daemon);
+        return new ThreadPoolExecutor(
+                customThreadPoolConfig.getCorePoolSize(),
+                customThreadPoolConfig.getMaximumPoolSize(),
+                customThreadPoolConfig.getKeepAliveTime(),
+                customThreadPoolConfig.getUnit(),
+                customThreadPoolConfig.getWorkQueue(),
+                threadFactory,
+                customThreadPoolConfig.getHandler());
+    }
+
+    /**
+     * 创建调度线程池
+     */
+    public static ScheduledExecutorService createScheduledThreadPool(int corePoolSize, String threadNamePrefix,
+            boolean daemon) {
+        ThreadFactory threadFactory = createThreadFactory(threadNamePrefix, daemon);
+        return new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
+    }
+
+    /**
+     * 关闭所有线程池
+     */
+    public static void shutDownAllThreadPool() {
+        log.info("关闭所有线程池...");
+        THREAD_POOLS.forEach((threadNamePrefix, executorService) -> {
+            shutDownThreadPool(executorService);
+        });
+    }
+
+    /**
+     * 关闭指定线程池
+     *
+     * @param executorService 线程池
+     */
+    public static void shutDownThreadPool(ExecutorService executorService) {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+            try {
+                log.info("等待线程池优雅关闭");
+                if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                    log.error("线程池超时未关闭，强制关闭");
+                    executorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                log.error("线程池关闭中断", e);
+                executorService.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+            log.info("线程池已关闭");
+        }
     }
 }

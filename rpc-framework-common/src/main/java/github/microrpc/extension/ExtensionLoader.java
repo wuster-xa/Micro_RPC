@@ -14,10 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-
+/**
+ * 参考dubbo SPI实现
+ * 扩展加载器
+ */
 @Slf4j
 public final class ExtensionLoader<T> {
-    //use META-INF/extensions/ config
+    // use META-INF/extensions/ config
     private static final String SERVICE_DIRECTORY = "META-INF/extensions/";
     private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<>();
@@ -37,7 +40,7 @@ public final class ExtensionLoader<T> {
         if (!type.isInterface()) {
             throw new IllegalArgumentException("Extension type must be an interface.");
         }
-        //只有@SPI注解的类能拓�?
+        // 只有@SPI注解的类能扩展
         if (type.getAnnotation(SPI.class) == null) {
             throw new IllegalArgumentException("Extension type must be annotated by @SPI");
         }
@@ -50,7 +53,7 @@ public final class ExtensionLoader<T> {
         return extensionLoader;
     }
 
-    //通过传入的name获取Class�?
+    // 通过传入的name获取Class对象
     public T getExtension(String name) {
         if (StringUtil.isBlank(name)) {
             throw new IllegalArgumentException("Extension name should not be null or empty.");
@@ -77,7 +80,7 @@ public final class ExtensionLoader<T> {
 
     private T createExtension(String name) {
         // load all extension classes of type T from file and get specific one by name
-        //通过传入的name获取Class反射
+        // 通过传入的name获取Class反射
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null) {
             throw new RuntimeException("No such extension of name " + name);
@@ -94,7 +97,7 @@ public final class ExtensionLoader<T> {
         return instance;
     }
 
-    //获取所有配置类名和类路径的Map
+    // 获取所有配置类名和类路径的Map
     private Map<String, Class<?>> getExtensionClasses() {
         // get the loaded extension class from the cache
         Map<String, Class<?>> classes = cachedClasses.get();
@@ -156,10 +159,21 @@ public final class ExtensionLoader<T> {
                         log.error(e.getMessage());
                     }
                 }
-
             }
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+}
+
+class Holder<T> {
+    private volatile T value;
+
+    public T get() {
+        return value;
+    }
+
+    public void set(T value) {
+        this.value = value;
     }
 }
